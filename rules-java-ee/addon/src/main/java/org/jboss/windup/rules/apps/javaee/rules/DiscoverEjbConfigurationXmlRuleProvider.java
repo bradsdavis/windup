@@ -55,7 +55,7 @@ import org.w3c.dom.Element;
 public class DiscoverEjbConfigurationXmlRuleProvider extends IteratingRuleProvider<XmlFileModel>
 {
     private static final Logger LOG = Logger.getLogger(DiscoverEjbConfigurationXmlRuleProvider.class.getSimpleName());
-    
+
     private static final String TECH_TAG = "EJB XML";
     private static final TechnologyTagLevel TECH_TAG_LEVEL = TechnologyTagLevel.IMPORTANT;
 
@@ -97,8 +97,7 @@ public class DiscoverEjbConfigurationXmlRuleProvider extends IteratingRuleProvid
         TechnologyTagService technologyTagService = new TechnologyTagService(context);
         TechnologyTagModel technologyTag = technologyTagService.addTagToFileModel(xmlModel, TECH_TAG, TECH_TAG_LEVEL);
         ClassificationModel classification = classificationService.attachClassification(xmlModel, "EJB XML", "Enterprise Java Bean XML Descriptor.");
-        
-        
+
         // otherwise, it is a EJB-JAR XML.
         if (xmlModel.getDoctype() != null)
         {
@@ -315,10 +314,11 @@ public class DiscoverEjbConfigurationXmlRuleProvider extends IteratingRuleProvid
         mdb.setEjbId(ejbId);
         mdb.setSessionType(sessionType);
         mdb.setTransactionType(transactionType);
-        
-        if(StringUtils.isNotBlank(destination)) {
+
+        if (StringUtils.isNotBlank(destination))
+        {
             JmsDestinationService jmsDestinationService = new JmsDestinationService(ctx);
-            
+
             JmsDestinationModel jndiRef = jmsDestinationService.createUnique(destination);
             mdb.setDestination(jndiRef);
         }
@@ -411,10 +411,31 @@ public class DiscoverEjbConfigurationXmlRuleProvider extends IteratingRuleProvid
                 ref.setReferenceId(id);
                 ref.setReferenceType(type);
             }
-            LOG.info("Reference: "+name+", Type: "+type);
+            LOG.info("Reference: " + name + ", Type: " + type);
             resources.add(ref);
         }
-        
+
+        for (Element e : $(element).find("resource-env-ref").get())
+        {
+            String id = $(e).attr("id");
+            String type = $(e).child("res-type").text();
+            String name = $(e).child("res-ref-name").text();
+
+            type = StringUtils.trim(type);
+            name = StringUtils.trim(name);
+
+            EnvironmentReferenceModel ref = environmentReferenceService.findEnvironmentReference(name, type);
+            if (ref == null)
+            {
+                ref = environmentReferenceService.create();
+                ref.setName(name);
+                ref.setReferenceId(id);
+                ref.setReferenceType(type);
+            }
+            LOG.info("Reference: " + name + ", Type: " + type);
+            resources.add(ref);
+        }
+
         for (Element e : $(element).find("resource-env-ref").get())
         {
             String id = $(e).attr("id");
@@ -432,10 +453,10 @@ public class DiscoverEjbConfigurationXmlRuleProvider extends IteratingRuleProvid
                 ref.setName(name);
                 ref.setReferenceType(type);
             }
-            LOG.info("Reference: "+name+", Type: "+type);
+            LOG.info("Reference: " + name + ", Type: " + type);
             resources.add(ref);
         }
-        
+
         for (Element e : $(element).find("message-destination-ref").get())
         {
             String id = $(e).attr("id");
@@ -453,10 +474,10 @@ public class DiscoverEjbConfigurationXmlRuleProvider extends IteratingRuleProvid
                 ref.setName(name);
                 ref.setReferenceType(type);
             }
-            LOG.info("Reference: "+name+", Type: "+type);
+            LOG.info("Reference: " + name + ", Type: " + type);
             resources.add(ref);
         }
-        
+
         return resources;
     }
 
