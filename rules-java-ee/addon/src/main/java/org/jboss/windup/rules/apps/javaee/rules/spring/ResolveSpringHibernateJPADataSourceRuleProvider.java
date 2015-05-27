@@ -64,7 +64,11 @@ public class ResolveSpringHibernateJPADataSourceRuleProvider extends IteratingRu
     @Override
     public void perform(GraphRewrite event, EvaluationContext context, SpringBeanModel payload)
     {
+<<<<<<< HEAD
         // handles only xml based spring beans with certain java classes, such as LocalSessionFactoryBean
+=======
+        //handles only xml based spring beans with certain java classes, such as LocalSessionFactoryBean
+>>>>>>> Extended for LocalContainerEntityManagerFactoryBean and HibernateJpaVendorAdapter resolution
         if (payload.getSpringConfiguration() == null || payload.getJavaClass() == null
                     || !isLocalSessionFactoryBean(payload.getJavaClass().getQualifiedName()))
         {
@@ -83,6 +87,7 @@ public class ResolveSpringHibernateJPADataSourceRuleProvider extends IteratingRu
         for (Element bean : $(doc).find("bean").filter(springid(payload.getSpringBeanName())))
         {
             String dsBeanNameRef = extractJndiRefBeanName(bean);
+<<<<<<< HEAD
             if (StringUtils.isBlank(dsBeanNameRef))
             {
                 continue;
@@ -97,6 +102,20 @@ public class ResolveSpringHibernateJPADataSourceRuleProvider extends IteratingRu
             }
 
             String springDbName = extractHibernateJpaVendorDatabase(doc, bean);
+=======
+            if (StringUtils.isBlank(dsBeanNameRef)) {
+                continue;
+            }
+                
+            String hibernateDialect = null;
+            Map<String, String> hibernateProperties = extractProperties(doc, bean);
+            hibernateProperties.putAll(extractHibernateJpaVendorJpaProperties(doc, bean));
+            if(hibernateProperties.containsKey("hibernate.dialect")) {
+                hibernateDialect = hibernateProperties.get("hibernate.dialect");
+            }
+            
+            String springDbName = extractHibernateJpaVendorDatabase(doc, bean); 
+>>>>>>> Extended for LocalContainerEntityManagerFactoryBean and HibernateJpaVendorAdapter resolution
             processHibernateSessionFactoryBean(event, dsBeanNameRef, hibernateDialect, springDbName);
             return;
         }
@@ -296,7 +315,6 @@ public class ResolveSpringHibernateJPADataSourceRuleProvider extends IteratingRu
                         dataSource.setDatabaseTypeName(resolvedType);
                     }
                 }
-
             }
             else
             {
