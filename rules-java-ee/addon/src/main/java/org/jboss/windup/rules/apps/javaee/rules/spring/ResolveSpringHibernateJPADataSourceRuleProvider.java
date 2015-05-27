@@ -296,7 +296,6 @@ public class ResolveSpringHibernateJPADataSourceRuleProvider extends IteratingRu
                         dataSource.setDatabaseTypeName(resolvedType);
                     }
                 }
-
             }
             else
             {
