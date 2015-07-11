@@ -100,6 +100,7 @@ public class CollectAnalyticsRuleProvider extends AbstractRuleProvider
         processXmlDoctype(context, client);
         processXmlNamespaces(context, client);
         processJavaClasses(context, client);
+        processArchives(context, client);
 
         client.sendQueuedEvents();
         LOG.info("Analytics submitted.");
@@ -176,6 +177,7 @@ public class CollectAnalyticsRuleProvider extends AbstractRuleProvider
             Map<String, Object> archive = new HashMap<>();
             addValue(archive, "sha1", ar.getSHA1Hash());
             addValue(archive, "md5", ar.getMD5Hash());
+            addValue(archive, "name", ar.getArchiveName());
             
             archives.add(archive);
         }
